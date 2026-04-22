@@ -11,7 +11,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "myverysecuresecretkey1234567890111111"; // must be long of 32 or bits
+    @Value("${jwt.secret}")
+    private String secret;// must be long of 32 or bits
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
     public String generateToken(String email) {
