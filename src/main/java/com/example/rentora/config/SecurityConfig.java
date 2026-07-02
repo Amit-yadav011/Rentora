@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/property/add").hasRole("LANDLORD")
                         .requestMatchers("/api/v1/images/**").authenticated()
                         .requestMatchers("/api/v1/property/**").permitAll()
+                        .requestMatchers("/health12").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
