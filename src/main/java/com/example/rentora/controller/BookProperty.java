@@ -34,6 +34,7 @@ public class BookProperty {
 
     @PostMapping("/{propertyId}")
     public ResponseEntity<?> booking(@PathVariable Long propertyId) {
+        System.out.println("Controller hit");
         return ResponseEntity.ok(bookService.addBooking(propertyId));
     }
 
@@ -46,6 +47,17 @@ public class BookProperty {
     @GetMapping("/property/{propertyId}")
     public ResponseEntity<?> getProperty(@PathVariable Long propertyId) {
         return ResponseEntity.ok(bookService.getBookingOfProperty(propertyId));
+    }
+
+    //get all property bookings for a particular landlords
+    @GetMapping("/bookings/owner")
+    public ResponseEntity<?> getAllListingsBooking() {
+        System.out.println("Controller Hit");
+        return ResponseEntity.ok(bookService.getLandlordBookings());
+    }
+    @GetMapping("/hello")
+    public String hello() {
+        return "working";
     }
 
     //for accepting that booking

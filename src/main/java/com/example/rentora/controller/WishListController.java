@@ -17,6 +17,7 @@ public class WishListController {
 
     @PostMapping("/add")
     public String addToWishList(@RequestParam Long propertyId) {
+        System.out.println("Controller Hit");
         return wishListService.addWishList( propertyId);
     }
 

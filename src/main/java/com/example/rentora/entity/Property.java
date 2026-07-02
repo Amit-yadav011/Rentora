@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Getter
@@ -23,6 +25,8 @@ public class Property {
     private String title;
     private String description;
     @NotBlank
+    private String city;
+    @NotBlank
     private String location;
     @NotNull
     private Double price;
@@ -33,7 +37,19 @@ public class Property {
     @NotNull
     private Boolean available;
 
-    private String imageUrl;
+    private String imgUrl;
+
+    @NotNull
+    private int beds;
+    @NotNull
+    private int baths;
+    @NotNull
+    private int sqft;
+
+    @ElementCollection
+    private List<String> neighborhood;
+
+
 
     @ManyToOne
     @JoinColumn(name="owner_id", nullable = true)

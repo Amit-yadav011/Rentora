@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -29,4 +31,5 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(()->new ResourceNotFoundException("User not found"));
     }
+
 }

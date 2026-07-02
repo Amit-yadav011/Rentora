@@ -5,6 +5,7 @@ import com.example.rentora.entity.Property;
 import com.example.rentora.entity.User;
 import com.example.rentora.entity.Wishlist;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,5 +16,6 @@ public interface WishListRepository extends JpaRepository<Wishlist, Long> {
 
     Optional<Wishlist> findByUserAndProperty(User user,  Property property);
 
+    @Transactional
     void deleteByUserAndProperty(User user,  Property property);
 }

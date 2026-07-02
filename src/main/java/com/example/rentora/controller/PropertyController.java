@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,8 +22,9 @@ public class PropertyController {
     private PropertyService propertyService;
 
     @PostMapping("/add")
-    public PropertyResponsedto CreateProperty(@RequestBody PropertyRequestdto dto){
-        return propertyService.save(dto);
+    public PropertyResponsedto CreateProperty(@ModelAttribute PropertyRequestdto dto, @RequestParam("image") MultipartFile image)
+    {
+        return propertyService.save(dto,image);
     }
 
     //bulk saving
@@ -36,8 +38,9 @@ public class PropertyController {
         return propertyService.getAllProperty();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public Property findById(@PathVariable Long id){
+        System.out.println("Controller Hit");
         return propertyService.findById(id);
     }
 

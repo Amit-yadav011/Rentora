@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,20 +32,25 @@ public class BookService {
     public String addBooking(Long propertyId){
 
         User currentUser=userService.getCurrentUser();
+        System.out.println("Email"+ currentUser.getEmail());
 
         Property property=propertyRepository.findById(propertyId).orElseThrow(()->new ResourceNotFoundException("Property not found"));
 
-        if(!currentUser.getId().equals(property.getOwner().getId())){
+        System.out.println("Property fetched");
+
+        if(currentUser.getId().equals(property.getOwner().getId())){
             throw new ResourceNotFoundException("Owner can not book their properties");
         }
 
         //to avoid multiple booking of same property
         Optional<Booking> existing=bookingRepository.findByUserAndProperty(currentUser,property);
-        if(existing.isPresent() && existing.get().getBookingStatus().equals(BookingStatus.Pending) ||
-                existing.get().getBookingStatus().equals(BookingStatus.Accepted)
-        ){
+        if(existing.isPresent() && (existing.get().getBookingStatus().equals(BookingStatus.Pending) ||
+                existing.get().getBookingStatus().equals(BookingStatus.Accepted)) )
+        {
             throw new RuntimeException("Booking already exists");
         }
+
+        System.out.println("Booking initialized!");
 
         Booking booking=new Booking();
         booking.setUser(currentUser);
@@ -69,7 +75,7 @@ public class BookService {
         return ResponseEntity.ok(bookingRepository.findByUser(currentUser));
     }
 
-    //this is to check owner's all property's booking
+    //this is to check owner's all property's (single property) booking
     public ResponseEntity<?> getBookingOfProperty(Long propertyId){
 
         User currentUser=userService.getCurrentUser();
@@ -81,5 +87,13 @@ public class BookService {
         }
 
         return ResponseEntity.ok(bookingRepository.findByProperty(property));
+    }
+
+    //this is to check all booking received by a particular landlord listings
+    public List<Booking> getLandlordBookings(){
+        System.out.println("Service layer Entered");
+        User currentUser=userService.getCurrentUser();
+        System.out.println("current User"+ currentUser.getEmail());
+        return bookingRepository.findByProperty_Owner(currentUser);
     }
 }

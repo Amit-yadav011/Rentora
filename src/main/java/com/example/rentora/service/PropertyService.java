@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.*;
@@ -32,17 +33,22 @@ public class PropertyService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     public List<Property> getAllProperty(){
         return propertyRepository.findAll();
     }
 
-    public PropertyResponsedto save(PropertyRequestdto dto){
+    public PropertyResponsedto save(PropertyRequestdto dto, MultipartFile image){
 
         User currentUser = userService.getCurrentUser();
 
-        if(currentUser.getRole() != Role.LANDLORD){
-            throw new ResourceNotFoundException("Only Landlords can add property");
+        if(currentUser.getRole() != Role.LANDLORD) {
+            throw new ResourceNotFoundException("Only Landlord can add property");
         }
+
+        String imgUrl=cloudinaryService.uploadImage(image);
 
         //convert dto to entity
         Property property = new Property();
@@ -52,6 +58,14 @@ public class PropertyService {
         property.setTitle(dto.getTitle());
         property.setPropertyType(dto.getPropertyType());
         property.setAvailable(dto.getAvailability());
+        property.setBaths(dto.getBaths());
+        property.setBeds(dto.getBeds());
+        property.setCity(dto.getCity());
+        property.setSqft(dto.getSqft());
+
+        property.setImgUrl(imgUrl);
+
+        property.setNeighborhood(dto.getNeighborhood());
 
         property.setOwner(currentUser);
 
@@ -67,6 +81,11 @@ public class PropertyService {
         response.setTitle(saved.getTitle());
         response.setPropertyType(saved.getPropertyType());
         response.setAvailability(saved.getAvailable());
+        response.setBaths(saved.getBaths());
+        response.setBeds(saved.getBeds());
+        response.setCity(saved.getCity());
+        response.setSqft(saved.getSqft());
+        response.setImgUrl(saved.getImgUrl());
 
         return response;
     }
@@ -79,7 +98,7 @@ public class PropertyService {
             throw new ResourceNotFoundException("Only Landlords can add property");
         }
 
-         //now entity to dto
+         //now dto to entity
         List<Property> properties= dtoList.stream().map(dto->{
             Property p=new Property();
             p.setDescription(dto.getDescription());
@@ -89,6 +108,12 @@ public class PropertyService {
             p.setOwner(currentUser);
             p.setTitle(dto.getTitle());
             p.setAvailable(dto.getAvailability());
+            p.setBaths(dto.getBaths());
+            p.setBeds(dto.getBeds());
+            p.setCity(dto.getCity());
+            p.setSqft(dto.getSqft());
+            p.setNeighborhood(dto.getNeighborhood());
+
 
             return p;
         }).toList();
@@ -105,6 +130,13 @@ public class PropertyService {
             response.setTitle(entity.getTitle());
             response.setPropertyType(entity.getPropertyType());
             response.setAvailability(entity.getAvailable());
+            response.setCity(entity.getCity());
+            response.setSqft(entity.getSqft());
+            response.setBeds(entity.getBeds());
+            response.setBaths(entity.getBaths());
+            response.setNeighborhood(entity.getNeighborhood());
+            response.setImgUrl(entity.getImgUrl());
+
             return response;
         }).toList();
 
@@ -130,14 +162,14 @@ public class PropertyService {
         try{
             Optional<Property> prop=propertyRepository.findById(id);
             if(prop.isPresent()){
-                Property p=prop.get();
-                return p;
+                logger.info("Property found");
+                return prop.get();
             }else{
                 logger.error("Property not fetched");
                 return null;
             }
         }catch(Exception e){
-            logger.error("No Property Found at that Id {}",e.getMessage());
+            logger.error("Error=",e);
             return null;
         }
     }

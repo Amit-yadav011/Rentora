@@ -1,5 +1,6 @@
 package com.example.rentora.service;
 
+
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.rentora.entity.Property;
@@ -18,40 +19,19 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
-    @Autowired
-    private PropertyRepository propertyRepository;
 
-    @Autowired
-    private UserService userService;
+    public String uploadImage(MultipartFile file) {
+        try {
 
-    public String uploadImage(MultipartFile file, Long propertyId) {
-        try{
+            Map<String, Object> uploadResult =
+                    cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
 
-            User user= userService.getCurrentUser();
+            return uploadResult.get("secure_url").toString();
 
-            Property prop=propertyRepository.findById(propertyId).orElseThrow(()->new ResourceNotFoundException("Property not found"));
+        } catch (Exception e) {
 
-            //only owner can set the images of their property no one else can do that!
-            if(!prop.getOwner().getId().equals(user.getId())){
-                throw new ResourceNotFoundException("You are not allowed to upload image for this property");
-            }
-
-            System.out.println("user id"+ user.getId());
-            System.out.println("property id"+ prop.getId());
-
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-
-            String imageUrl= uploadResult.get("secure_url").toString();
-
-            prop.setImageUrl(imageUrl);
-
-            propertyRepository.save(prop);
-
-            return imageUrl;
-        }
-        catch (Exception e){
-               e.printStackTrace();
-               throw new ResourceNotFoundException("Image upload failed");
+            e.printStackTrace();
+            throw new ResourceNotFoundException("Image upload failed");
         }
     }
 }

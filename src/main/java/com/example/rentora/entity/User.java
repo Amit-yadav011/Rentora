@@ -2,6 +2,7 @@ package com.example.rentora.entity;
 
 
 import com.example.rentora.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
